@@ -82,10 +82,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <List>
         {menuItems.map((item) => (
           <ListItem
-            button
             key={item.text}
             onClick={() => navigate(item.path)}
-            selected={location.pathname === item.path}
+            sx={{ 
+              cursor: 'pointer',
+              ...(location.pathname === item.path && {
+                backgroundColor: 'action.selected'
+              })
+            }}
           >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
