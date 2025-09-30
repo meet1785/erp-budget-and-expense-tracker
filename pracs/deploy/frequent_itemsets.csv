@@ -1,0 +1,33 @@
+itemset,size,support
+Croissant,1,0.202
+Crackers,1,0.227
+Cheese,1,0.188
+Bread,1,0.208
+Chicken,1,0.219
+Butter,1,0.161
+Pork,1,0.222
+Coffee,1,0.216
+Chips,1,0.214
+Juice,1,0.213
+Milk,1,0.152
+Beef,1,0.217
+Muffin,1,0.218
+Bananas,1,0.156
+Cookies,1,0.228
+Apples,1,0.145
+Lettuce,1,0.126
+Tea,1,0.212
+Carrots,1,0.161
+Yogurt,1,0.152
+"Cookies, Crackers",2,0.133
+"Chicken, Pork",2,0.113
+"Coffee, Juice",2,0.121
+"Bread, Croissant",2,0.103
+"Juice, Tea",2,0.105
+"Beef, Chicken",2,0.115
+"Chips, Cookies",2,0.108
+"Chips, Crackers",2,0.122
+"Beef, Pork",2,0.117
+"Croissant, Muffin",2,0.107
+"Coffee, Tea",2,0.106
+"Bread, Muffin",2,0.107
