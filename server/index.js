@@ -6,6 +6,7 @@ const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
 const { testEmailConnection } = require('./utils/emailService');
 const { initializeCurrencyService } = require('./utils/currencyService');
+const recurringExpenseScheduler = require('./services/recurringExpenseScheduler');
 
 // Load environment variables
 dotenv.config();
@@ -52,6 +53,7 @@ app.use('/api/expenses', require('./routes/expenses'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/currency', require('./routes/currency'));
 app.use('/api/uploads', require('./routes/uploads'));
+app.use('/api/scheduler', require('./routes/scheduler'));
 
 // Health check endpoint with enhanced information
 app.get('/api/health', async (req, res) => {
@@ -112,6 +114,7 @@ app.get('/api/info', (req, res) => {
       reports: '/api/reports',
       currency: '/api/currency',
       uploads: '/api/uploads',
+      scheduler: '/api/scheduler',
       health: '/api/health'
     },
     documentation: {
@@ -161,6 +164,7 @@ app.use('*', (req, res) => {
       '/api/reports',
       '/api/currency',
       '/api/uploads',
+      '/api/scheduler',
       '/api/health'
     ]
   });
@@ -192,6 +196,9 @@ const server = app.listen(PORT, async () => {
     // Initialize currency service
     await initializeCurrencyService();
     
+    // Start recurring expense scheduler
+    recurringExpenseScheduler.start();
+    
     console.log('✅ All services initialized successfully!');
   } catch (error) {
     console.warn('⚠️  Some services failed to initialize:', error.message);
@@ -217,6 +224,7 @@ process.on('uncaughtException', (err) => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('📡 SIGTERM received. Shutting down gracefully...');
+  recurringExpenseScheduler.stop();
   server.close(() => {
     console.log('✅ Process terminated gracefully');
   });
@@ -224,6 +232,7 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   console.log('📡 SIGINT received. Shutting down gracefully...');
+  recurringExpenseScheduler.stop();
   server.close(() => {
     console.log('✅ Process terminated gracefully');
   });
