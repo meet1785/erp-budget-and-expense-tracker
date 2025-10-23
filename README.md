@@ -8,6 +8,7 @@ A comprehensive ERP-based budgeting and expense tracking system built with Node.
 - **User Management**: Multi-role authentication (Admin, Manager, User)
 - **Budget Management**: Create, update, and monitor budgets with periods and thresholds
 - **Expense Tracking**: Submit, approve, and track expenses against budgets
+- **Recurring Expenses**: ✨ **NEW** Automated processing of recurring expenses (subscriptions, salaries, etc.)
 - **Real-time Alerts**: Automated budget overrun notifications via email
 - **Reporting & Analytics**: Comprehensive reports and visualizations
 - **Category Management**: Organize expenses and budgets by categories
@@ -18,6 +19,7 @@ A comprehensive ERP-based budgeting and expense tracking system built with Node.
 - **Database Relations**: MongoDB with Mongoose ODM
 - **Authentication**: JWT-based authentication system
 - **Email Notifications**: Automated alerts and notifications
+- **Scheduled Jobs**: ✨ **NEW** Daily background scheduler for recurring expenses
 - **Input Validation**: Comprehensive data validation
 - **Error Handling**: Proper error handling and logging
 - **Responsive Design**: Mobile-friendly React interface
@@ -156,6 +158,12 @@ npm run client
 - `PUT /api/expenses/:id/review` - Approve/Reject expense (Manager/Admin)
 - `DELETE /api/expenses/:id` - Delete expense
 
+### Scheduler Endpoints (Admin/Manager)
+- `GET /api/scheduler/status` - Get recurring expense scheduler status
+- `POST /api/scheduler/trigger` - Manually trigger recurring expense processing (Admin only)
+- `POST /api/scheduler/start` - Start the scheduler (Admin only)
+- `POST /api/scheduler/stop` - Stop the scheduler (Admin only)
+
 ## 🔐 User Roles & Permissions
 
 ### Admin
@@ -203,6 +211,30 @@ npm run client
 - Manager/Admin approval required
 - Automatic notifications to submitters
 - Rejection reasons and feedback
+
+### Recurring Expenses
+- **Automated Processing**: Daily scheduler automatically creates recurring expenses
+- **Multiple Frequencies**: Support for daily, weekly, monthly, quarterly, and yearly recurrence
+- **Smart Scheduling**: Expenses created only when due based on `nextRecurringDate`
+- **Status Management**: New recurring expenses created with 'pending' status for approval
+- **Email Notifications**: Users automatically notified when recurring expenses are created
+- **Audit Trail**: Full audit logging of auto-generated expenses
+- **Admin Control**: Admins can monitor, start, stop, and manually trigger the scheduler
+
+#### Setting Up Recurring Expenses
+1. Create an expense with the normal flow
+2. Mark `isRecurring: true`
+3. Set `recurringPeriod` (daily/weekly/monthly/quarterly/yearly)
+4. Set `nextRecurringDate` to the first occurrence date
+5. Approve the expense (only approved recurring expenses are processed)
+6. The scheduler will automatically create new expenses on the recurring dates
+
+#### Scheduler Configuration
+- **Schedule**: Runs daily at 2:00 AM UTC (configurable via TZ environment variable)
+- **Automatic Start**: Starts automatically when server starts
+- **Graceful Shutdown**: Stops cleanly when server shuts down
+- **Status Monitoring**: Check scheduler status via `/api/scheduler/status`
+- **Manual Trigger**: Admins can manually trigger processing via `/api/scheduler/trigger`
 
 ## 📈 Reporting & Analytics
 
@@ -271,20 +303,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Email notifications require proper SMTP configuration
 - MongoDB connection required for all operations
-- File upload for receipts not yet implemented (planned feature)
+
+## ✅ Recent Enhancements
+
+### Recurring Expense Automation (v2.1.0)
+- ✅ **Automated Scheduler**: Daily background job processes recurring expenses at 2:00 AM
+- ✅ **Multiple Frequencies**: Support for daily, weekly, monthly, quarterly, and yearly recurrence
+- ✅ **Email Notifications**: Automatic notifications when recurring expenses are created
+- ✅ **Admin Management**: API endpoints for scheduler control and monitoring
+- ✅ **Comprehensive Testing**: Full test coverage for recurring expense logic
 
 ## 🔮 Future Enhancements
 
-- [ ] Receipt file upload and storage
-- [ ] Advanced reporting with PDF export
+- [x] Receipt file upload and storage (Implemented)
+- [x] Advanced reporting with PDF export (Implemented)
+- [x] Multi-currency support (Implemented)
+- [x] Recurring expense automation (Implemented ✨ NEW)
+- [x] Advanced approval workflows (Implemented)
+- [x] Audit trail and logging (Implemented)
 - [ ] Mobile app development
 - [ ] Integration with accounting systems
-- [ ] Multi-currency support
-- [ ] Recurring expense automation
-- [ ] Advanced approval workflows
-- [ ] Audit trail and logging
 - [ ] Data export/import functionality
 - [ ] Dashboard customization
+- [ ] Scheduled budget reports
 
 ## 📞 Support
 
