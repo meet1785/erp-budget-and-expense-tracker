@@ -1,12 +1,26 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 const recurringExpenseScheduler = require('../services/recurringExpenseScheduler');
 
+// Rate limiting for scheduler endpoints
+// Limit to 10 requests per 15 minutes per IP
+const schedulerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many requests to scheduler endpoints. Please try again later.',
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
 // @desc    Get recurring expense scheduler status
 // @route   GET /api/scheduler/status
 // @access  Private/Admin
-router.get('/status', protect, authorize('admin', 'manager'), (req, res) => {
+router.get('/status', schedulerLimiter, protect, authorize('admin', 'manager'), (req, res) => {
   try {
     const status = recurringExpenseScheduler.getStatus();
     
@@ -30,7 +44,7 @@ router.get('/status', protect, authorize('admin', 'manager'), (req, res) => {
 // @desc    Manually trigger recurring expense processing
 // @route   POST /api/scheduler/trigger
 // @access  Private/Admin
-router.post('/trigger', protect, authorize('admin'), async (req, res) => {
+router.post('/trigger', schedulerLimiter, protect, authorize('admin'), async (req, res) => {
   try {
     console.log(`🔧 Manual scheduler trigger requested by ${req.user.name} (${req.user.email})`);
     
@@ -65,7 +79,7 @@ router.post('/trigger', protect, authorize('admin'), async (req, res) => {
 // @desc    Stop recurring expense scheduler
 // @route   POST /api/scheduler/stop
 // @access  Private/Admin
-router.post('/stop', protect, authorize('admin'), (req, res) => {
+router.post('/stop', schedulerLimiter, protect, authorize('admin'), (req, res) => {
   try {
     if (!recurringExpenseScheduler.getStatus().isRunning) {
       return res.status(400).json({
@@ -100,7 +114,7 @@ router.post('/stop', protect, authorize('admin'), (req, res) => {
 // @desc    Start recurring expense scheduler
 // @route   POST /api/scheduler/start
 // @access  Private/Admin
-router.post('/start', protect, authorize('admin'), (req, res) => {
+router.post('/start', schedulerLimiter, protect, authorize('admin'), (req, res) => {
   try {
     if (recurringExpenseScheduler.getStatus().isRunning) {
       return res.status(400).json({
